@@ -25,23 +25,27 @@ class ObjectData(Data):
     def cache_id(self, context):
         if isinstance(self.value, numpy.ndarray):
             hash_context = reproducible.hash_family()
-            hash_context.update(numpy.array_repr(self.value))
+            hash_context.update(type(self.value).__name__.encode('utf8'))
+            hash_context.update(numpy.array_repr(self.value).encode('utf8'))
             return str(base64.b16encode(hash_context.digest()),
                        'ascii').lower()
         elif isinstance(self.value, numbers.Number):
             return str(self.value)
         elif isinstance(self.value, str):
             hash_context = reproducible.hash_family()
+            hash_context.update(type(self.value).__name__.encode('utf8'))
             hash_context.update(self.value.encode('utf8'))
             return str(base64.b16encode(hash_context.digest()),
                        'ascii').lower()
         elif isinstance(self.value, bytes):
             hash_context = reproducible.hash_family()
+            hash_context.update(type(self.value).__name__.encode('utf8'))
             hash_context.update(self.value)
             return str(base64.b16encode(hash_context.digest()),
                        'ascii').lower()
         else:
             hash_context = reproducible.hash_family()
+            hash_context.update(type(self.value).__name__.encode('utf8'))
             hash_context.update(pickle.dumps(self.value))
             return str(base64.b16encode(hash_context.digest()),
                        'ascii').lower()

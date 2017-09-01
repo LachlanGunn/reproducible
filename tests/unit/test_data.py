@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 
 import os
+import numpy
 import tempfile
 
 import reproducible
+
+
+class Test:
+    def __init__(self, value):
+        self.value = value
 
 
 def test_file_data_create():
@@ -33,3 +39,50 @@ def test_file_data_update(monkeypatch):
     assert data.cache_id(None) == \
            'fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9'
     os.unlink(filename)
+
+
+def test_object_data_strings():
+    object_data_1 = reproducible.ObjectData('foo')
+    object_data_2 = reproducible.ObjectData('foo')
+    object_data_3 = reproducible.ObjectData('bar')
+
+    assert object_data_1.cache_id(None) == object_data_2.cache_id(None)
+    assert object_data_1.cache_id(None) != object_data_3.cache_id(None)
+
+
+def test_object_data_strings():
+    object_data_1 = reproducible.ObjectData(b'foo')
+    object_data_2 = reproducible.ObjectData(b'foo')
+    object_data_3 = reproducible.ObjectData(b'bar')
+    object_data_4 = reproducible.ObjectData('foo')
+
+    assert object_data_1.cache_id(None) == object_data_2.cache_id(None)
+    assert object_data_1.cache_id(None) != object_data_3.cache_id(None)
+    assert object_data_1.cache_id(None) != object_data_4.cache_id(None)
+
+
+def test_object_data_numpy():
+    x = numpy.random.randn(100, 2)
+    y = numpy.random.randn(2, 100)
+    z = x.reshape(2, 100)
+    object_data_1 = reproducible.ObjectData(x)
+    object_data_2 = reproducible.ObjectData(x)
+    object_data_3 = reproducible.ObjectData(y)
+    object_data_4 = reproducible.ObjectData(z)
+
+    assert object_data_1.cache_id(None) == object_data_2.cache_id(None)
+    assert object_data_1.cache_id(None) != object_data_3.cache_id(None)
+    assert object_data_1.cache_id(None) != object_data_4.cache_id(None)
+
+
+def test_object_data_object():
+    x1 = Test('x')
+    x2 = Test('x')
+    y = Test('y')
+
+    object_data_x1 = reproducible.ObjectData(x1)
+    object_data_x2 = reproducible.ObjectData(x2)
+    object_data_y = reproducible.ObjectData(y)
+
+    assert object_data_x1.cache_id(None) == object_data_x2.cache_id(None)
+    assert object_data_x1.cache_id(None) != object_data_y.cache_id(None)
