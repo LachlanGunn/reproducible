@@ -18,9 +18,9 @@ class Data(object):
 
 
 class ObjectData(Data):
-    def __init__(self, object: object):
+    def __init__(self, value: object):
         super().__init__(None)
-        self.value = object
+        self.value = value
 
     def cache_id(self, context):
         if isinstance(self.value, numpy.ndarray):

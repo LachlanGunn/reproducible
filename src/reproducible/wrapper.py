@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import base64
+import inspect
+
 import reproducible
 
 
@@ -21,7 +24,12 @@ def operation(cache: reproducible.Cache):
                 cache_value = make_cache_value(value)
                 cache_string_parts.append('kwarg_%s=%s' % (key, cache_value))
 
-            cache_string = func.__name__ + '[%s]' % ':'.join(cache_string_parts)
+            hash_context = reproducible.hash_family()
+            hash_context.update(inspect.getsource(func).encode('utf8'))
+            func_hash = str(base64.b16encode(hash_context.digest()), 'ascii')
+
+            cache_string = '%s:%s:[%s]' % (func.__name__, func_hash,
+                                           ','.join(cache_string_parts))
             if cache.is_cached(cache_string):
                 return cache.get(cache_string)
 
