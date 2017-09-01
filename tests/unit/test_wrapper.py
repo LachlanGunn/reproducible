@@ -8,11 +8,9 @@ side_effects = 0
 def test_wrapper():
     global side_effects
 
-    cache = reproducible.MemoryCache()
-
     side_effects = 0
 
-    @reproducible.operation(cache)
+    @reproducible.operation
     def foo(x):
         global side_effects
         side_effects += 1

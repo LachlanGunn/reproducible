@@ -3,7 +3,6 @@
 import os.path
 import pickle
 
-
 class Cache(object):
     def set(self, key, value):
         raise NotImplementedError("This is an abstract cache.")
@@ -55,3 +54,15 @@ class FileCache(Cache):
             os.mkdir(base_path)
         with open(os.path.join(base_path, 'data'), 'wb') as fh:
             pickle.dump(value, fh)
+
+
+def set_cache(cache: Cache) -> None:
+    global _cache
+    _cache = cache
+
+
+def get_cache() -> Cache:
+    global _cache
+    return _cache
+
+_cache = MemoryCache()
