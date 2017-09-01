@@ -20,8 +20,8 @@ def operation(cache: reproducible.Cache):
                 cache_value = make_cache_value(arg)
                 cache_string_parts.append('arg_%d=%s' % (i, cache_value))
 
-            for key, value in sorted(kwargs):
-                cache_value = make_cache_value(value)
+            for key in sorted(kwargs):
+                cache_value = make_cache_value(kwargs[key])
                 cache_string_parts.append('kwarg_%s=%s' % (key, cache_value))
 
             hash_context = reproducible.hash_family()
