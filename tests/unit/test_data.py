@@ -7,7 +7,7 @@ import tempfile
 import reproducible
 
 
-class Test:
+class PlaceholderClass:
     def __init__(self, value):
         self.value = value
 
@@ -76,9 +76,9 @@ def test_object_data_numpy():
 
 
 def test_object_data_object():
-    x1 = Test('x')
-    x2 = Test('x')
-    y = Test('y')
+    x1 = PlaceholderClass('x')
+    x2 = PlaceholderClass('x')
+    y = PlaceholderClass('y')
 
     object_data_x1 = reproducible.ObjectData(x1)
     object_data_x2 = reproducible.ObjectData(x2)

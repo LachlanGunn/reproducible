@@ -6,7 +6,7 @@ import reproducible
 import numpy
 
 
-class Test:
+class PlaceholderClass:
     pass
 
 
@@ -38,7 +38,7 @@ def test_file_cache_objects():
         assert cache.get('foo') == ['bar', 'baz']
         assert not cache.is_cached('bar')
 
-        value = Test()
+        value = PlaceholderClass()
         value.x = 'y'
         cache.set('bar', value)
         assert cache.is_cached('bar')
