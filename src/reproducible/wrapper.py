@@ -7,6 +7,20 @@ import reproducible
 
 
 def operation(func):
+    """Make a function cacheable.
+
+    The `@operation` decorator makes a function cacheable, with the cache
+    in question being globally set with `reproducible.set_cache`.  Simply
+    decorate a function definition with @operation, and the function return
+    value will be cached.
+
+    Cache lookup is performed with respect to all arguments.  An object which
+    is not an instance of `reproducible.Data` will be wrapped with
+    `reproducible.ObjectData` before its cache id is calculated.  There
+    are special cases for some types, such as `numpy.ndarray`, but in
+    general the cache id will be given by the SHA-256 checksum of the
+    pickled value of the object.
+    """
     def make_cache_value(value: object) -> str:
         if isinstance(value, reproducible.Data):
             return value.cache_id(None)
