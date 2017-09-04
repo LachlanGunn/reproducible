@@ -26,3 +26,24 @@ def test_wrapper():
     assert side_effects == 3
     foo(1)
     assert side_effects == 3
+
+
+def test_wrapper_skip():
+    global side_effects
+
+    side_effects = 0
+
+    @reproducible.operation
+    def bar(x):
+        global side_effects
+        side_effects += 1
+        return side_effects - 1
+
+    bar(0)
+    assert side_effects == 1
+    bar(0)
+    assert side_effects == 1
+    bar(reproducible.cache_ignore(1))
+    assert side_effects == 2
+    bar(reproducible.cache_ignore(2))
+    assert side_effects == 2

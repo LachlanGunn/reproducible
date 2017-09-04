@@ -8,8 +8,25 @@ import pickle
 import reproducible
 import numpy
 
-
 auto_type_registry = {}
+
+
+def cache_ignore(obj):
+    """Ignore an object when deciding whether or not to cache."""
+
+    class IgnoredObjectData(obj.__class__, IgnoredData):
+        def __getattr__(self, item):
+            return getattr(obj, item)
+
+        def __setattr__(self, key, value):
+            return setattr(obj, key, value)
+
+    return IgnoredObjectData()
+
+
+def cache_ignored(obj):
+    """Determine whether or not an object should be ignored while caching."""
+    return isinstance(obj, IgnoredData)
 
 
 class Data(object):
@@ -18,6 +35,11 @@ class Data(object):
 
     def cache_id(self, context):
         raise NotImplementedError("Base Data class contains no data.")
+
+
+class IgnoredData(Data):
+    def __init__(self):
+        pass
 
 
 class ObjectData(Data):

@@ -21,6 +21,7 @@ def operation(func):
     general the cache id will be given by the SHA-256 checksum of the
     pickled value of the object.
     """
+
     def make_cache_value(value: object) -> str:
         if isinstance(value, reproducible.Data):
             return value.cache_id(None)
@@ -32,12 +33,14 @@ def operation(func):
 
         cache_string_parts = []
         for i, arg in enumerate(args):
-            cache_value = make_cache_value(arg)
-            cache_string_parts.append('arg_%d=%s' % (i, cache_value))
+            if not reproducible.cache_ignored(arg):
+                cache_value = make_cache_value(arg)
+                cache_string_parts.append('arg_%d=%s' % (i, cache_value))
 
         for key in sorted(kwargs):
-            cache_value = make_cache_value(kwargs[key])
-            cache_string_parts.append('kwarg_%s=%s' % (key, cache_value))
+            if not reproducible.cache_ignored(kwargs[key]):
+                cache_value = make_cache_value(kwargs[key])
+                cache_string_parts.append('kwarg_%s=%s' % (key, cache_value))
 
         hash_context = reproducible.hash_family()
         hash_context.update(inspect.getsource(func).encode('utf8'))
