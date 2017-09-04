@@ -4,7 +4,9 @@ import os
 import numpy
 import tempfile
 
+import keras.models
 import reproducible
+import reproducible.data.keras
 
 
 class PlaceholderClass:
@@ -86,3 +88,15 @@ def test_object_data_object():
 
     assert object_data_x1.cache_id(None) == object_data_x2.cache_id(None)
     assert object_data_x1.cache_id(None) != object_data_y.cache_id(None)
+
+
+def test_object_auto_object():
+    x = PlaceholderClass('x')
+    data = reproducible.get_data_wrapper(x)
+    assert isinstance(data, reproducible.ObjectData)
+
+
+def test_object_auto_model():
+    x = keras.models.Sequential()
+    data = reproducible.get_data_wrapper(x)
+    assert isinstance(data, reproducible.data.keras.ModelData)

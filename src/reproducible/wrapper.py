@@ -25,7 +25,7 @@ def operation(func):
         if isinstance(value, reproducible.Data):
             return value.cache_id(None)
         else:
-            return reproducible.ObjectData(value).cache_id(None)
+            return reproducible.get_data_wrapper(value).cache_id(None)
 
     def wrapper(*args, **kwargs):
         cache = reproducible.get_cache()

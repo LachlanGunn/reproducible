@@ -9,6 +9,9 @@ import reproducible
 import numpy
 
 
+auto_type_registry = {}
+
+
 class Data(object):
     def __init__(self, parent):
         self.parent = parent
@@ -72,3 +75,16 @@ class FileData(Data):
                 self.id_cached_modification_time = modification_time
 
         return self.id_cached
+
+
+def get_data_wrapper(obj):
+    """Automatically select the right reproducible.Data type for an object."""
+    for key in auto_type_registry:
+        if isinstance(obj, key):
+            return auto_type_registry[key](obj)
+    return ObjectData(obj)
+
+
+def register_type(datatype, handler):
+    """Register a type in the auto-wrapper."""
+    auto_type_registry[datatype] = handler
