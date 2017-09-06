@@ -33,14 +33,14 @@ class ModelData(reproducible.generic.Data):
 
     @classmethod
     def __from_dict(cls, parsed_data):
-        model = keras.models.from_json(parsed_data['architecture'])
+        model = keras.models.model_from_json(parsed_data['architecture'])
         weights = []
         for encoded_weights in parsed_data['weights']:
             sio = io.BytesIO(base64.b64decode(encoded_weights))
             weights.append(numpy.load(sio))
             sio.close()
         model.set_weights(weights)
-        return model
+        return ModelData(model)
 
     @classmethod
     def load(cls, fh):

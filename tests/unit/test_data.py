@@ -97,7 +97,7 @@ def test_object_auto_object():
     data.cache_id(None)
 
 
-#@pytest.mark.skip("This is too slow.")
+@pytest.mark.skip("This is too slow.")
 def test_object_auto_model():
     import keras.models, keras.layers
     x = keras.models.Sequential([keras.layers.Dense(32, input_shape=(2, ))])
