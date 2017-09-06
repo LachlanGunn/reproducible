@@ -5,7 +5,6 @@ import numpy
 import pytest
 import tempfile
 
-#import keras.models
 import reproducible
 import reproducible.data.keras
 
@@ -99,6 +98,7 @@ def test_object_auto_object():
 
 @pytest.mark.skip("This is too slow.")
 def test_object_auto_model():
+    import keras.models
     x = keras.models.Sequential()
     data = reproducible.get_data_wrapper(x)
     assert isinstance(data, reproducible.data.keras.ModelData)

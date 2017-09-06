@@ -48,13 +48,17 @@ def operation(func):
         hash_context.update(inspect.getsource(func).encode('utf8'))
         func_hash = str(base64.b16encode(hash_context.digest()), 'ascii')
 
-        cache_string = '%s:%s:[%s]' % (func.__name__, func_hash,
-                                       ','.join(cache_string_parts))
-        if cache.is_cached(cache_string):
-            return cache.get(cache_string)
+        hash_context = reproducible.hash_family()
+        cache_string = '%s[%s]' % (func_hash,
+                                       ':'.join(cache_string_parts))
+        hash_context.update(cache_string.encode('utf8'))
+        cache_key = func.__name__ + '.' + str(base64.b16encode(hash_context.digest()), 'utf8')
+
+        if cache.is_cached(cache_key):
+            return cache.get(cache_key)
 
         result = func(*args, **kwargs)
-        cache.set(cache_string, result)
+        cache.set(cache_key, result)
         return result
 
     return wrapper

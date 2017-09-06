@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import reproducible
+import tempfile
 
 side_effects = 0
 
@@ -47,3 +48,21 @@ def test_wrapper_skip():
     assert side_effects == 2
     bar(reproducible.cache_ignore(2))
     assert side_effects == 2
+
+
+def test_wrapper_file_cache():
+    global side_effects
+    with tempfile.TemporaryDirectory() as root_dir:
+        reproducible.set_cache(reproducible.FileCache(root_dir))
+
+        @reproducible.operation
+        def baz(x):
+            global side_effects
+            side_effects += 1
+            return side_effects - 1
+
+        side_effects = 0
+        baz(0)
+        assert side_effects == 1
+        baz(0)
+        assert side_effects == 1
