@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import base64
+import functools
 import inspect
 
 import reproducible
@@ -28,6 +29,7 @@ def operation(func):
         else:
             return reproducible.get_data_wrapper(value).cache_id(None)
 
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         cache = reproducible.get_cache()
 
