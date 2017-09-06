@@ -49,16 +49,16 @@ def operation(func):
         func_hash = str(base64.b16encode(hash_context.digest()), 'ascii')
 
         hash_context = reproducible.hash_family()
-        cache_string = '%s[%s]' % (func_hash,
-                                       ':'.join(cache_string_parts))
+        cache_string = '%s[%s]' % (func_hash, ':'.join(cache_string_parts))
         hash_context.update(cache_string.encode('utf8'))
-        cache_key = func.__name__ + '.' + str(base64.b16encode(hash_context.digest()), 'utf8')
+        cache_key = func.__name__ + '.' + str(
+            base64.b16encode(hash_context.digest()), 'utf8')
 
         if cache.is_cached(cache_key):
-            return cache.get(cache_key)
+            return cache.get(cache_key).value
 
         result = func(*args, **kwargs)
-        cache.set(cache_key, result)
+        cache.set(cache_key, reproducible.get_data_wrapper(result))
         return result
 
     return wrapper

@@ -29,7 +29,7 @@ def test_wrapper():
     assert side_effects == 3
 
 
-def test_wrapper_skip():
+def test_wrapper_ignore_argument():
     global side_effects
 
     side_effects = 0
@@ -48,6 +48,17 @@ def test_wrapper_skip():
     assert side_effects == 2
     bar(reproducible.cache_ignore(2))
     assert side_effects == 2
+
+    class C(object):
+        def __init__(self, x):
+            self.x = x
+
+    @reproducible.operation
+    def check(obj):
+        assert isinstance(obj, C)
+        assert obj.x == 3
+
+    bar(reproducible.cache_ignore(C(3)))
 
 
 def test_wrapper_file_cache():

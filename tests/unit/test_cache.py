@@ -13,9 +13,9 @@ class PlaceholderClass:
 def test_memory_cache():
     cache = reproducible.MemoryCache()
 
-    cache.set('foo', 'bar')
+    cache.set('foo', reproducible.get_data_wrapper('bar'))
     assert cache.is_cached('foo')
-    assert cache.get('foo') == 'bar'
+    assert cache.get('foo').value == 'bar'
     assert not cache.is_cached('baz')
 
 
@@ -23,9 +23,9 @@ def test_file_cache_strings():
     with tempfile.TemporaryDirectory() as root_dir:
         cache = reproducible.FileCache(root_dir)
 
-        cache.set('foo', 'bar')
+        cache.set('foo', reproducible.get_data_wrapper('bar'))
         assert cache.is_cached('foo')
-        assert cache.get('foo') == 'bar'
+        assert cache.get('foo').value == 'bar'
         assert not cache.is_cached('baz')
 
 
@@ -33,17 +33,17 @@ def test_file_cache_objects():
     with tempfile.TemporaryDirectory() as root_dir:
         cache = reproducible.FileCache(root_dir)
 
-        cache.set('foo', ['bar', 'baz'])
+        cache.set('foo', reproducible.get_data_wrapper(['bar', 'baz']))
         assert cache.is_cached('foo')
-        assert cache.get('foo') == ['bar', 'baz']
+        assert cache.get('foo').value == ['bar', 'baz']
         assert not cache.is_cached('bar')
 
         value = PlaceholderClass()
         value.x = 'y'
-        cache.set('bar', value)
+        cache.set('bar', reproducible.get_data_wrapper(value))
         assert cache.is_cached('bar')
-        assert cache.get('bar').x == 'y'
-        assert cache.get('foo') == ['bar', 'baz']
+        assert cache.get('bar').value.x == 'y'
+        assert cache.get('foo').value == ['bar', 'baz']
 
 
 def test_file_cache_numpy():
@@ -52,9 +52,9 @@ def test_file_cache_numpy():
 
         x = numpy.random.randn(100, 2)
 
-        cache.set('foo', x)
+        cache.set('foo', reproducible.get_data_wrapper(x))
         assert cache.is_cached('foo')
-        assert (cache.get('foo') == x).all()
+        assert (cache.get('foo').value == x).all()
 
 
 def test_file_cache_numpy():
@@ -63,6 +63,6 @@ def test_file_cache_numpy():
 
         x = numpy.random.randn(100, 2)
 
-        cache.set('foo', x)
+        cache.set('foo', reproducible.get_data_wrapper(x))
         assert cache.is_cached('foo')
-        assert (cache.get('foo') == x).all()
+        assert (cache.get('foo').value == x).all()

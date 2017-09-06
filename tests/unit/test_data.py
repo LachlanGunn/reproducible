@@ -94,11 +94,13 @@ def test_object_auto_object():
     x = PlaceholderClass('x')
     data = reproducible.get_data_wrapper(x)
     assert isinstance(data, reproducible.ObjectData)
+    data.cache_id(None)
 
 
-@pytest.mark.skip("This is too slow.")
+#@pytest.mark.skip("This is too slow.")
 def test_object_auto_model():
-    import keras.models
-    x = keras.models.Sequential()
+    import keras.models, keras.layers
+    x = keras.models.Sequential([keras.layers.Dense(32, input_shape=(2, ))])
     data = reproducible.get_data_wrapper(x)
     assert isinstance(data, reproducible.data.keras.ModelData)
+    data.cache_id(None)

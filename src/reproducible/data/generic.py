@@ -15,6 +15,9 @@ def cache_ignore(obj):
     """Ignore an object when deciding whether or not to cache."""
 
     class IgnoredObjectData(obj.__class__, IgnoredData):
+        def __init__(self):
+            pass
+
         def __getattr__(self, item):
             return getattr(obj, item)
 
@@ -33,7 +36,25 @@ class Data(object):
     def __init__(self, parent):
         self.parent = parent
 
+    @property
+    def value(self):
+        raise NotImplementedError("Base Data class contains no data.")
+
     def cache_id(self, context):
+        raise NotImplementedError("Base Data class contains no data.")
+
+    def dump(self, fh):
+        raise NotImplementedError("Base Data class contains no data.")
+
+    def dumps(self):
+        raise NotImplementedError("Base Data class contains no data.")
+
+    @classmethod
+    def load(cls, fh):
+        raise NotImplementedError("Base Data class contains no data.")
+
+    @classmethod
+    def loads(cls, fh):
         raise NotImplementedError("Base Data class contains no data.")
 
 
@@ -45,35 +66,31 @@ class IgnoredData(Data):
 class ObjectData(Data):
     def __init__(self, value: object):
         super().__init__(None)
-        self.value = value
+        self.obj = value
+
+    @property
+    def value(self):
+        return self.obj
 
     def cache_id(self, context):
-        if isinstance(self.value, numpy.ndarray):
-            hash_context = reproducible.hash_family()
-            hash_context.update(type(self.value).__name__.encode('utf8'))
-            hash_context.update(numpy.array_repr(self.value).encode('utf8'))
-            return str(base64.b16encode(hash_context.digest()),
-                       'ascii').lower()
-        elif isinstance(self.value, numbers.Number):
-            return str(self.value)
-        elif isinstance(self.value, str):
-            hash_context = reproducible.hash_family()
-            hash_context.update(type(self.value).__name__.encode('utf8'))
-            hash_context.update(self.value.encode('utf8'))
-            return str(base64.b16encode(hash_context.digest()),
-                       'ascii').lower()
-        elif isinstance(self.value, bytes):
-            hash_context = reproducible.hash_family()
-            hash_context.update(type(self.value).__name__.encode('utf8'))
-            hash_context.update(self.value)
-            return str(base64.b16encode(hash_context.digest()),
-                       'ascii').lower()
-        else:
-            hash_context = reproducible.hash_family()
-            hash_context.update(type(self.value).__name__.encode('utf8'))
-            hash_context.update(pickle.dumps(self.value))
-            return str(base64.b16encode(hash_context.digest()),
-                       'ascii').lower()
+        hash_context = reproducible.hash_family()
+        hash_context.update(type(self.obj).__name__.encode('utf8'))
+        hash_context.update(self.dumps())
+        return str(base64.b16encode(hash_context.digest()), 'utf8')
+
+    def dump(self, fh):
+        return pickle.dump(self.obj, fh)
+
+    def dumps(self):
+        return pickle.dumps(self.obj)
+
+    @classmethod
+    def load(cls, fh):
+        return ObjectData(pickle.load(fh))
+
+    @classmethod
+    def loads(cls, s):
+        return ObjectData(pickle.loads(s))
 
 
 class FileData(Data):
@@ -82,6 +99,10 @@ class FileData(Data):
         self.filename = filename
         self.id_cached = None
         self.id_cached_modification_time = None
+
+    @property
+    def value(self):
+        return self.filename
 
     def cache_id(self, context):
         modification_time = os.path.getmtime(self.filename)
@@ -97,6 +118,17 @@ class FileData(Data):
                 self.id_cached_modification_time = modification_time
 
         return self.id_cached
+
+    def dumps(self):
+        return self.filename
+
+    @classmethod
+    def loads(cls, fh):
+        return FileData(fh.read())
+
+    @classmethod
+    def loads(cls, s):
+        return FileData(s)
 
 
 def get_data_wrapper(obj):

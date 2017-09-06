@@ -3,6 +3,9 @@
 import os.path
 import pickle
 
+import reproducible
+import reproducible.data
+
 
 class Cache(object):
     def set(self, key, value):
@@ -20,7 +23,7 @@ class MemoryCache(Cache):
         super().__init__()
         self.cache = {}
 
-    def set(self, key: str, value: object) -> None:
+    def set(self, key: str, value: reproducible.data.Data) -> None:
         self.cache[key] = value
 
     def get(self, key: str) -> object:
@@ -46,15 +49,19 @@ class FileCache(Cache):
 
     def get(self, key: str) -> object:
         base_path = os.path.join(self.root, key)
-        with open(os.path.join(base_path, 'data'), 'rb') as fh:
-            return pickle.load(fh)
+        with open(os.path.join(base_path, 'data'), 'rb') as fh, \
+             open(os.path.join(base_path, 'type'), 'rb') as fh_type:
+            data_type = pickle.load(fh_type)
+            return data_type.load(fh)
 
-    def set(self, key: str, value: object):
+    def set(self, key: str, value: reproducible.data.Data):
         base_path = os.path.join(self.root, key)
         if not self.__check_directory__(base_path):
             os.mkdir(base_path)
-        with open(os.path.join(base_path, 'data'), 'wb') as fh:
-            pickle.dump(value, fh)
+        with open(os.path.join(base_path, 'data'), 'wb') as fh, \
+             open(os.path.join(base_path, 'type'), 'wb') as fh_type:
+            value.dump(fh)
+            pickle.dump(type(value), fh_type)
 
 
 def set_cache(cache: Cache) -> None:
