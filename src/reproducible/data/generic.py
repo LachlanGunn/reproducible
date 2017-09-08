@@ -123,7 +123,7 @@ class FileData(Data):
         return self.filename
 
     @classmethod
-    def loads(cls, fh):
+    def load(cls, fh):
         return FileData(fh.read())
 
     @classmethod
