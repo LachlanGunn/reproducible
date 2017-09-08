@@ -27,6 +27,10 @@ def test_wrapper():
     assert side_effects == 3
     foo(1)
     assert side_effects == 3
+    foo(x=1)
+    assert side_effects == 4
+    foo(x=1)
+    assert side_effects == 4
 
 
 def test_wrapper_ignore_argument():

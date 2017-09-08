@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import abc
 import base64
 import os.path
 import numbers
@@ -14,7 +15,7 @@ auto_type_registry = {}
 def cache_ignore(obj):
     """Ignore an object when deciding whether or not to cache."""
 
-    class IgnoredObjectData(obj.__class__, IgnoredData):
+    class IgnoredObjectData(type(obj), IgnoredData):
         def __init__(self):
             pass
 
@@ -32,30 +33,8 @@ def cache_ignored(obj):
     return isinstance(obj, IgnoredData)
 
 
-class Data(object):
-    def __init__(self, parent):
-        self.parent = parent
-
-    @property
-    def value(self):
-        raise NotImplementedError("Base Data class contains no data.")
-
-    def cache_id(self, context):
-        raise NotImplementedError("Base Data class contains no data.")
-
-    def dump(self, fh):
-        raise NotImplementedError("Base Data class contains no data.")
-
-    def dumps(self):
-        raise NotImplementedError("Base Data class contains no data.")
-
-    @classmethod
-    def load(cls, fh):
-        raise NotImplementedError("Base Data class contains no data.")
-
-    @classmethod
-    def loads(cls, fh):
-        raise NotImplementedError("Base Data class contains no data.")
+class Data(abc.ABC):
+    pass
 
 
 class IgnoredData(Data):
@@ -65,7 +44,7 @@ class IgnoredData(Data):
 
 class ObjectData(Data):
     def __init__(self, value: object):
-        super().__init__(None)
+        super().__init__()
         self.obj = value
 
     @property
@@ -95,7 +74,7 @@ class ObjectData(Data):
 
 class FileData(Data):
     def __init__(self, filename):
-        super().__init__(None)
+        super().__init__()
         self.filename = filename
         self.id_cached = None
         self.id_cached_modification_time = None
@@ -119,16 +98,19 @@ class FileData(Data):
 
         return self.id_cached
 
+    def dump(self, fh):
+        fh.write(self.filename.encode('utf8'))
+
     def dumps(self):
-        return self.filename
+        return self.filename.encode('utf8')
 
     @classmethod
     def load(cls, fh):
-        return FileData(fh.read())
+        return FileData(str(fh.read(), 'utf8'))
 
     @classmethod
     def loads(cls, s):
-        return FileData(s)
+        return FileData(str(s, 'utf8'))
 
 
 def get_data_wrapper(obj):

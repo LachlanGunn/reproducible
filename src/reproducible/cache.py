@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import abc
 import os.path
 import pickle
 
@@ -9,14 +10,7 @@ import sys
 
 
 class Cache(object):
-    def set(self, key, value):
-        raise NotImplementedError("This is an abstract cache.")
-
-    def get(self, key):
-        raise NotImplementedError("This is an abstract cache.")
-
-    def is_cached(self, key: str) -> bool:
-        return False
+    pass
 
 
 class MemoryCache(Cache):

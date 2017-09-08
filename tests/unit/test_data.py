@@ -1,17 +1,36 @@
 #!/usr/bin/env python3
 
+import io
 import os
 import numpy
 import pytest
 import tempfile
 
 import reproducible
-import reproducible.data.keras
 
 
 class PlaceholderClass:
     def __init__(self, value):
         self.value = value
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+
+DATA_OBJECT_EXAMPLES = [
+    (reproducible.ObjectData, PlaceholderClass('x')),
+    (reproducible.FileData, tempfile.mkstemp()[1]),
+]
+
+
+def test_ignored_data():
+    x = PlaceholderClass('x')
+    x_ignored = reproducible.cache_ignore(x)
+    assert x == x_ignored
+
+    x_ignored.value = 'Hello!'
+    # We use x.value here to make sure that it is touching the original object.
+    assert x.value == 'Hello!'
 
 
 def test_file_data_create():
@@ -97,16 +116,55 @@ def test_object_auto_object():
     data.cache_id(None)
 
 
+@pytest.mark.parametrize('datatype,test_object', DATA_OBJECT_EXAMPLES)
+def test_data_roundtrip_string_out_string_in(datatype, test_object):
+    object_data_x1 = datatype(test_object)
+    object_data_x2 = datatype.loads(object_data_x1.dumps())
+    assert object_data_x1.value == object_data_x2.value
+
+
+@pytest.mark.parametrize('datatype,test_object', DATA_OBJECT_EXAMPLES)
+def test_data_roundtrip_string_out_file_in(datatype, test_object):
+    object_data_x1 = datatype(test_object)
+    serialised_object = object_data_x1.dumps()
+    serialised_object_file = io.BytesIO(serialised_object)
+    object_data_x2 = datatype.load(serialised_object_file)
+    assert object_data_x1.value == object_data_x2.value
+
+
+@pytest.mark.parametrize('datatype,test_object', DATA_OBJECT_EXAMPLES)
+def test_data_roundtrip_file_out_string_in(datatype, test_object):
+    object_data_x1 = datatype(test_object)
+    serialised_object_file = io.BytesIO()
+    object_data_x1.dump(serialised_object_file)
+    object_data_x2 = datatype.loads(serialised_object_file.getvalue())
+    assert object_data_x1.value == object_data_x2.value
+
+
+@pytest.mark.parametrize('datatype,test_object', DATA_OBJECT_EXAMPLES)
+def test_data_roundtrip_file_out_file_in(datatype, test_object):
+    object_data_x1 = datatype(test_object)
+    serialised_object_file = io.BytesIO()
+    object_data_x1.dump(serialised_object_file)
+    serialised_object_file.seek(0)
+    object_data_x2 = datatype.load(serialised_object_file)
+    assert object_data_x1.value == object_data_x2.value
+
+
+@pytest.mark.slow
 def test_object_auto_model():
     import keras.models, keras.layers
+    import reproducible.data.keras
     x = keras.models.Sequential([keras.layers.Dense(32, input_shape=(2, ))])
     data = reproducible.get_data_wrapper(x)
     assert isinstance(data, reproducible.data.keras.ModelData)
     data.cache_id(None)
 
 
+@pytest.mark.slow
 def test_keras_model():
     import keras.models, keras.layers
+    import reproducible.data.keras
     x = keras.models.Sequential([keras.layers.Dense(32, input_shape=(2, ))])
     data = reproducible.get_data_wrapper(x)
     assert isinstance(data, reproducible.data.keras.ModelData)
