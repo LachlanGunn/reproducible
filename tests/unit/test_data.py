@@ -97,10 +97,25 @@ def test_object_auto_object():
     data.cache_id(None)
 
 
-@pytest.mark.skip("This is too slow.")
 def test_object_auto_model():
     import keras.models, keras.layers
     x = keras.models.Sequential([keras.layers.Dense(32, input_shape=(2, ))])
     data = reproducible.get_data_wrapper(x)
     assert isinstance(data, reproducible.data.keras.ModelData)
     data.cache_id(None)
+
+
+def test_keras_model():
+    import keras.models, keras.layers
+    x = keras.models.Sequential([keras.layers.Dense(32, input_shape=(2, ))])
+    data = reproducible.get_data_wrapper(x)
+    assert isinstance(data, reproducible.data.keras.ModelData)
+    data_rt = reproducible.data.keras.ModelData.loads(data.dumps())
+
+    assert data.model.get_config() == data_rt.model.get_config()
+
+    weights_initial = data.model.get_weights()
+    weights_roundtrip = data_rt.model.get_weights()
+    assert len(weights_initial) == len(weights_roundtrip)
+    for i in range(len(weights_initial)):
+        assert (weights_initial[i] == weights_roundtrip[i]).all()
