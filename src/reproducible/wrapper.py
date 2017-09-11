@@ -25,7 +25,8 @@ def operation(func):
     pickled value of the object.
     """
 
-    def make_cache_value(value: object) -> str:
+    def make_cache_value(value):
+        # type: (object) -> str
         if isinstance(value, reproducible.Data):
             return value.cache_id(None)
         else:

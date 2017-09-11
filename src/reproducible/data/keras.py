@@ -11,7 +11,8 @@ import reproducible
 
 
 class ModelData(reproducible.generic.Data):
-    def __init__(self, model: keras.models.Model):
+    def __init__(self, model):
+        # type: (keras.models.Model) -> None
         super(ModelData, self).__init__()
         self.model = model
 
@@ -53,7 +54,7 @@ class ModelData(reproducible.generic.Data):
     def loads(cls, s):
         return cls.__from_dict(json.loads(str(s, 'utf8')))
 
-    def cache_id(self, context):
+    def cache_id(self, _):
         hash_context = reproducible.hash_family()
         hash_context.update(type(self.model).__name__.encode('utf8'))
         hash_context.update(self.dumps())

@@ -43,7 +43,8 @@ class IgnoredData(Data):
 
 
 class ObjectData(Data):
-    def __init__(self, value: object):
+    def __init__(self, value):
+        # type: (object) -> None
         super(ObjectData, self).__init__()
         self.obj = value
 
