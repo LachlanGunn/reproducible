@@ -48,7 +48,7 @@ class ModelData(reproducible.generic.Data):
 
     @classmethod
     def loads(cls, s):
-        return cls.__from_dict(json.loads(s))
+        return cls.__from_dict(json.loads(str(s, 'utf8')))
 
     def cache_id(self, context):
         hash_context = reproducible.hash_family()
