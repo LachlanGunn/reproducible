@@ -14,7 +14,7 @@ auto_type_registry = {}
 def cache_ignore(obj):
     """Ignore an object when deciding whether or not to cache."""
 
-    class IgnoredObjectData(type(obj), IgnoredData):
+    class IgnoredObjectData(obj.__class__, IgnoredData):
         def __init__(self):
             pass
 
