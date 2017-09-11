@@ -46,13 +46,14 @@ class FileCache(Cache):
         self.root = root
         self.debug = debug
 
-    def is_cached(self, key: str) -> bool:
+    def is_cached(self, key):
+        # type: (str) -> bool
         return self.__check_directory__(os.path.join(self.root, key))
 
     def get(self, key):
         # type: (str) -> object
         if self.debug:
-            print("GET %s\n -> " % (key), file=sys.stderr, end="")
+            print("GET %s\n -> " % (key,), file=sys.stderr, end="")
         base_path = os.path.join(self.root, key)
         with open(os.path.join(base_path, 'data'), 'rb') as fh, \
              open(os.path.join(base_path, 'type'), 'rb') as fh_type:
@@ -78,12 +79,14 @@ class FileCache(Cache):
             pickle.dump(type(value), fh_type)
 
 
-def set_cache(cache: Cache) -> None:
+def set_cache(cache):
+    # type: (Cache) -> None
     global _cache
     _cache = cache
 
 
-def get_cache() -> Cache:
+def get_cache():
+    # type: () -> Cache
     global _cache
     return _cache
 
