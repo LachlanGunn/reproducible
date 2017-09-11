@@ -24,4 +24,8 @@ setup(
     install_requires=[
         'numpy',
     ],
-    python_requires='>=3')
+    python_requires='>=3',
+    extras_require={
+      'tests': ['pytest', 'keras'],
+    },
+)
