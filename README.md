@@ -1,6 +1,8 @@
 Reproducible scientific computing tools for Python
 ==================================================
 
+![Public Domain](doc/images/cc0-badge-88x15.png)
+
 ___This software is highly experimental.  Expect it to break at every
     opportunity.___
 
@@ -119,6 +121,12 @@ transparent caching of intermediate results, allowing us to write
 functional-style code without side effects, with all parameters
 specified at the point-of-use in the document, without
 unnecessary computation.
+
+Licence
+-------
+
+`reproducible` is public-domain software, with a Creative Commons CC0
+dedication.  See [LICENCE.md](LICENCE.md) for details.
 
 The Author
 ----------

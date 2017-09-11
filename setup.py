@@ -11,11 +11,12 @@ setup(
     description='Aid to reproducible computation.',
     author='Lachlan Gunn',
     author_email='lachlan@twopif.net',
-    license='none',
+    license='CC0',
     classifiers=[
         'Development Status :: 1 - Pre-Alpha',
         'Intended Audience :: Science/Research',
         'Programming Language :: Python :: 3',
+        'License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication'
     ],
     keywords='science reproducibility',
     package_dir={'': 'src'},
