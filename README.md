@@ -2,6 +2,7 @@ Reproducible scientific computing tools for Python
 ==================================================
 
 ![Public Domain](doc/images/cc0-badge-88x15.png)
+[![Build Status](https://travis-ci.org/LachlanGunn/reproducible.svg?branch=master)](https://travis-ci.org/LachlanGunn/reproducible)
 
 ___This software is highly experimental.  Expect it to break at every
     opportunity.___
