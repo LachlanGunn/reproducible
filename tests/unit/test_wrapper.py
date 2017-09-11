@@ -3,6 +3,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import reproducible
+import shutil
 import tempfile
 
 side_effects = 0
@@ -69,7 +70,8 @@ def test_wrapper_ignore_argument():
 
 def test_wrapper_file_cache():
     global side_effects
-    with tempfile.TemporaryDirectory() as root_dir:
+    root_dir = tempfile.mkdtemp()
+    try:
         reproducible.set_cache(reproducible.FileCache(root_dir))
 
         @reproducible.operation
@@ -83,3 +85,5 @@ def test_wrapper_file_cache():
         assert side_effects == 1
         baz(0)
         assert side_effects == 1
+    finally:
+        shutil.rmtree(root_dir)

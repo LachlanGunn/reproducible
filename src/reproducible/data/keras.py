@@ -25,7 +25,7 @@ class ModelData(reproducible.generic.Data):
         for weight in self.model.get_weights():
             sio = io.BytesIO()
             numpy.save(sio, weight)
-            weights.append(str(base64.b64encode(sio.getvalue()), 'ascii'))
+            weights.append(base64.b64encode(sio.getvalue()).decode('ascii'))
             sio.close()
         return json.dumps({
             'weights': weights,
