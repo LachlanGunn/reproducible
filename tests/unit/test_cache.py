@@ -70,7 +70,8 @@ def test_file_cache_numpy():
 
 
 def test_file_cache_numpy():
-    with tempfile.TemporaryDirectory() as root_dir:
+    root_dir = tempfile.mkdtemp()
+    try:
         cache = reproducible.FileCache(root_dir)
 
         x = numpy.random.randn(100, 2)
@@ -78,3 +79,5 @@ def test_file_cache_numpy():
         cache.set('foo', reproducible.get_data_wrapper(x))
         assert cache.is_cached('foo')
         assert (cache.get('foo').value == x).all()
+    finally:
+        shutil.rmtree(root_dir)
