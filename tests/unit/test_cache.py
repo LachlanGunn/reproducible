@@ -6,6 +6,7 @@ import tempfile
 
 import reproducible
 import numpy
+import shutil
 
 
 class PlaceholderClass:
@@ -22,17 +23,21 @@ def test_memory_cache():
 
 
 def test_file_cache_strings():
-    with tempfile.TemporaryDirectory() as root_dir:
+    root_dir = tempfile.mkdtemp()
+    try:
         cache = reproducible.FileCache(root_dir)
 
         cache.set('foo', reproducible.get_data_wrapper('bar'))
         assert cache.is_cached('foo')
         assert cache.get('foo').value == 'bar'
         assert not cache.is_cached('baz')
+    finally:
+        shutil.rmtree(root_dir)
 
 
 def test_file_cache_objects():
-    with tempfile.TemporaryDirectory() as root_dir:
+    root_dir = tempfile.mkdtemp()
+    try:
         cache = reproducible.FileCache(root_dir)
 
         cache.set('foo', reproducible.get_data_wrapper(['bar', 'baz']))
@@ -46,6 +51,8 @@ def test_file_cache_objects():
         assert cache.is_cached('bar')
         assert cache.get('bar').value.x == 'y'
         assert cache.get('foo').value == ['bar', 'baz']
+    finally:
+        shutil.rmtree(root_dir)
 
 
 def test_file_cache_numpy():

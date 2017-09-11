@@ -52,13 +52,13 @@ class ModelData(reproducible.generic.Data):
 
     @classmethod
     def loads(cls, s):
-        return cls.__from_dict(json.loads(str(s, 'utf8')))
+        return cls.__from_dict(json.loads(s.decode('utf8')))
 
     def cache_id(self, _):
         hash_context = reproducible.hash_family()
         hash_context.update(type(self.model).__name__.encode('utf8'))
         hash_context.update(self.dumps())
-        return str(base64.b16encode(hash_context.digest()), 'ascii').lower()
+        return base64.b16encode(hash_context.digest()).decode('ascii').lower()
 
 
 reproducible.register_type(keras.models.Model, ModelData)
