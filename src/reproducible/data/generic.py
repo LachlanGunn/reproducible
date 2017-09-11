@@ -55,7 +55,7 @@ class ObjectData(Data):
         hash_context = reproducible.hash_family()
         hash_context.update(type(self.obj).__name__.encode('utf8'))
         hash_context.update(self.dumps())
-        return str(base64.b16encode(hash_context.digest()), 'utf8')
+        return base64.b16encode(hash_context.digest()).decode('utf8')
 
     def dump(self, fh):
         return pickle.dump(self.obj, fh)
@@ -92,8 +92,7 @@ class FileData(Data):
                 for chunk in iter(lambda: fh.read(1024), b''):
                     hash_context.update(chunk)
                 file_hash = hash_context.digest()
-                self.id_cached = str(base64.b16encode(file_hash),
-                                     'ascii').lower()
+                self.id_cached = base64.b16encode(file_hash).decode('ascii').lower()
                 self.id_cached_modification_time = modification_time
 
         return self.id_cached
@@ -106,11 +105,11 @@ class FileData(Data):
 
     @classmethod
     def load(cls, fh):
-        return FileData(str(fh.read(), 'utf8'))
+        return FileData(fh.read().decode('utf8'))
 
     @classmethod
     def loads(cls, s):
-        return FileData(str(s, 'utf8'))
+        return FileData(s.decode('utf8'))
 
 
 def get_data_wrapper(obj):

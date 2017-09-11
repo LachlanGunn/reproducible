@@ -26,6 +26,5 @@ setup(
     ],
     python_requires='>=2.7',
     extras_require={
-      'tests': ['pytest', 'keras', 'tensorflow'],
-    },
-)
+        'tests': ['pytest', 'keras', 'tensorflow'],
+    }, )
