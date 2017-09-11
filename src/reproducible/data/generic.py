@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import abc
 import base64
 import os.path
-import numbers
 import pickle
 
 import reproducible
-import numpy
 
 auto_type_registry = {}
 
@@ -17,6 +17,7 @@ def cache_ignore(obj):
 
     class IgnoredObjectData(type(obj), IgnoredData):
         def __init__(self):
+            super(IgnoredObjectData, self).__init__()
             pass
 
         def __getattr__(self, item):
@@ -44,14 +45,14 @@ class IgnoredData(Data):
 
 class ObjectData(Data):
     def __init__(self, value: object):
-        super().__init__()
+        super(ObjectData, self).__init__()
         self.obj = value
 
     @property
     def value(self):
         return self.obj
 
-    def cache_id(self, context):
+    def cache_id(self, _):
         hash_context = reproducible.hash_family()
         hash_context.update(type(self.obj).__name__.encode('utf8'))
         hash_context.update(self.dumps())
@@ -74,7 +75,7 @@ class ObjectData(Data):
 
 class FileData(Data):
     def __init__(self, filename):
-        super().__init__()
+        super(FileData, self).__init__()
         self.filename = filename
         self.id_cached = None
         self.id_cached_modification_time = None
@@ -83,7 +84,7 @@ class FileData(Data):
     def value(self):
         return self.filename
 
-    def cache_id(self, context):
+    def cache_id(self, _):
         modification_time = os.path.getmtime(self.filename)
         if (not self.id_cached
                 or modification_time > self.id_cached_modification_time):

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import abc
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os.path
 import pickle
 
@@ -15,7 +16,7 @@ class Cache(object):
 
 class MemoryCache(Cache):
     def __init__(self):
-        super().__init__()
+        super(MemoryCache, self).__init__()
         self.cache = {}
 
     def set(self, key: str, value: reproducible.data.Data) -> None:
@@ -24,17 +25,20 @@ class MemoryCache(Cache):
     def get(self, key: str) -> object:
         return self.cache.get(key)
 
-    def is_cached(self, key: str) -> bool:
+    def is_cached(self, key):
+        # type: (str) -> bool
         return key in self.cache.keys()
 
 
 class FileCache(Cache):
     @classmethod
-    def __check_directory__(cls, root: str) -> bool:
+    def __check_directory__(cls, root):
+        # type: (str) -> bool
         return os.path.isdir(root)
 
-    def __init__(self, root: str, debug: bool=False):
-        super().__init__()
+    def __init__(self, root, debug=False):
+        # type: (str, bool) -> None
+        super(FileCache, self).__init__()
         if not self.__check_directory__(root):
             os.mkdir(root)
         self.root = root
@@ -43,7 +47,8 @@ class FileCache(Cache):
     def is_cached(self, key: str) -> bool:
         return self.__check_directory__(os.path.join(self.root, key))
 
-    def get(self, key: str) -> object:
+    def get(self, key):
+        # type: (str) -> object
         if self.debug:
             print("GET %s\n -> " % (key), file=sys.stderr, end="")
         base_path = os.path.join(self.root, key)
@@ -58,7 +63,8 @@ class FileCache(Cache):
                 return data_type.loads(data)
             return data_type.load(fh)
 
-    def set(self, key: str, value: reproducible.data.Data):
+    def set(self, key, value):
+        # type: (str, reproducible.data.Data) -> None
         if self.debug:
             print('SET %s' % key, file=sys.stderr)
         base_path = os.path.join(self.root, key)
