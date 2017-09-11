@@ -53,7 +53,7 @@ class FileCache(Cache):
     def get(self, key):
         # type: (str) -> object
         if self.debug:
-            print("GET %s\n -> " % (key,), file=sys.stderr, end="")
+            print("GET %s\n -> " % (key, ), file=sys.stderr, end="")
         base_path = os.path.join(self.root, key)
         with open(os.path.join(base_path, 'data'), 'rb') as fh, \
              open(os.path.join(base_path, 'type'), 'rb') as fh_type:

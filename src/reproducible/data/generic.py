@@ -2,7 +2,6 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import abc
 import base64
 import os.path
 import pickle
@@ -33,7 +32,7 @@ def cache_ignored(obj):
     return isinstance(obj, IgnoredData)
 
 
-class Data(abc.ABC):
+class Data(object):
     pass
 
 
