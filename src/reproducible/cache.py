@@ -16,13 +16,15 @@ class Cache(object):
 
 class MemoryCache(Cache):
     def __init__(self):
-        super(MemoryCache, self).__init__()
+        super(MemoryCache, self).__init__(self)
         self.cache = {}
 
-    def set(self, key: str, value: reproducible.data.Data) -> None:
+    def set(self, key, value):
+        # type: (str, reproducible.data.Data) -> None
         self.cache[key] = value
 
-    def get(self, key: str) -> object:
+    def get(self, key):
+        # type: (str) -> object
         return self.cache.get(key)
 
     def is_cached(self, key):
@@ -38,7 +40,7 @@ class FileCache(Cache):
 
     def __init__(self, root, debug=False):
         # type: (str, bool) -> None
-        super(FileCache, self).__init__()
+        super(FileCache, self).__init__(self)
         if not self.__check_directory__(root):
             os.mkdir(root)
         self.root = root

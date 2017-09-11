@@ -12,6 +12,7 @@ import reproducible
 
 class ModelData(reproducible.generic.Data):
     def __init__(self, model: keras.models.Model):
+        super(ModelData, self).__init__(self)
         self.model = model
 
     @property
