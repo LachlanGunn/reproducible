@@ -17,7 +17,6 @@ def cache_ignore(obj):
 
     class IgnoredObjectData(type(obj), IgnoredData):
         def __init__(self):
-            super(IgnoredObjectData, self).__init__(self)
             pass
 
         def __getattr__(self, item):
@@ -45,7 +44,7 @@ class IgnoredData(Data):
 
 class ObjectData(Data):
     def __init__(self, value: object):
-        super(ObjectData, self).__init__(self)
+        super(ObjectData, self).__init__()
         self.obj = value
 
     @property
@@ -75,7 +74,7 @@ class ObjectData(Data):
 
 class FileData(Data):
     def __init__(self, filename):
-        super(FileData, self).__init__(self)
+        super(FileData, self).__init__()
         self.filename = filename
         self.id_cached = None
         self.id_cached_modification_time = None
