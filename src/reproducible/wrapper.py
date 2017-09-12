@@ -13,10 +13,24 @@ import reproducible
 def operation(func):
     """Make a function cacheable.
 
-    The `@operation` decorator makes a function cacheable, with the cache
+    The ``@operation`` decorator makes a function cacheable, with the cache
     in question being globally set with `reproducible.set_cache`.  Simply
     decorate a function definition with @operation, and the function return
     value will be cached.
+
+    Example:
+        >>> @reproducible.operation
+        ... def fun(x):
+        ...     print("Executing fun(%d)" % x)
+        ...     return x
+        >>> fun(1)
+        Executing fun(1)
+        1
+        >>> fun(1)
+        1
+        >>> fun(2)
+        Executing fun(2)
+        2
 
     Cache lookup is performed with respect to all arguments.  An object which
     is not an instance of `reproducible.Data` will be wrapped with

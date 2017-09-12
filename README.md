@@ -16,7 +16,7 @@ By supporting a more functional style of programming, we allow
 parameters to be described at the top level of a computation.
 This will allow us to make full use of the literate programming
 capabilities provided by
-[_PythonTex_](https://github.com/gpoore/pythontex)
+[_PythonTeX_](https://github.com/gpoore/pythontex)
 without either a long wait every time we compile or external result
 caches that must be kept in sync.
 
@@ -130,6 +130,17 @@ Licence
 
 `reproducible` is public-domain software, with a Creative Commons CC0
 dedication.  See [LICENCE.md](LICENCE.md) for details.
+
+We build our documentation using _Sphinx_ and _sphinx_rtd_theme_; its
+output files will include copyrighted material in the form of
+templates:
+
+    - doc/_build/
+    - doc/conf.py
+    - doc/make.bat
+    - doc/Makefile
+
+these are
 
 The Author
 ----------

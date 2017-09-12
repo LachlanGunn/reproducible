@@ -27,4 +27,5 @@ setup(
     python_requires='>=2.7',
     extras_require={
         'tests': ['pytest', 'keras', 'tensorflow'],
+        'doc': ['Sphinx', 'sphinx_rtd_theme'],
     }, )

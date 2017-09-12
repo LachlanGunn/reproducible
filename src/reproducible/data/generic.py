@@ -26,12 +26,19 @@ def cache_ignore(obj):
 
     `cache_ignore` returns a proxy object that can be detected as data
     to be ignored.  When passed to a function wrapped in
-    @reproducible.operation, its value will not be considered when
-    determining whether the result is already cached.
+    :func:`@reproducible.operation <reproducible.operation>`, its value
+    will not be considered when determining whether the result is already
+    cached.
 
-    This is useful when configuration date is passed into a function
+    This is useful when configuration data is passed into a function
     that is necessary to run the computation, but does not affect
     the final result, for example the address of a remote server.
+
+    Args:
+        obj (object): The object to be ignored.
+
+    Return:
+        A proxy object for obj that will be ignored for caching purposes.
     """
 
     class IgnoredObjectData(obj.__class__, IgnoredData):

@@ -15,6 +15,11 @@ class Cache(object):
 
 
 class MemoryCache(Cache):
+    """Memory-backed cache.
+
+    MemoryCache provides a key-value object store in memory, stored in
+    a standard dictionary.
+    """
     def __init__(self):
         super(MemoryCache, self).__init__()
         self.cache = {}
@@ -33,12 +38,29 @@ class MemoryCache(Cache):
 
 
 class FileCache(Cache):
+    """Disk-backed cache.
+
+    FileCache provides a key-value store on disk.  Each item in the cache
+    has a directory, named for its key.  The directory contains two files:
+
+        - /type: The pickled object type.
+        - /data: The serialised data itself.
+
+    As the objects in question are of type reproducible.Data, we can use
+    the unpickled type object to get access to the appropriate
+    .load() class method.
+    """
     @classmethod
     def __check_directory__(cls, root):
         # type: (str) -> bool
         return os.path.isdir(root)
 
     def __init__(self, root, debug=None):
+        """
+        Args:
+            root   (str): The root directory of the cache.
+            debug (file): A file-like object to which to log cache accesses.
+        """
         # type: (str, bool) -> None
         super(FileCache, self).__init__()
         if not self.__check_directory__(root):
@@ -80,6 +102,14 @@ class FileCache(Cache):
 
 
 def set_cache(cache):
+    """Set the global cache.
+
+    Args:
+        cache (reproducible.Cache): The new cache object.
+
+    Return:
+        Nothing.
+    """
     # type: (Cache) -> None
     global _cache
     _cache = cache
