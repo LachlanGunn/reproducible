@@ -7,7 +7,7 @@ python:
 install:
   - pip install -e .[tests]
 before_script:
-  - pip install python-coveralls
+  - pip install python-coveralls pytest-cov
 script:
   - py.test tests/ --cov=src
 after_success:
