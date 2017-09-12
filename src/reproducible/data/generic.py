@@ -12,6 +12,15 @@ import reproducible
 auto_type_registry = {}
 
 
+class Data(object):
+    pass
+
+
+class IgnoredData(Data):
+    def __init__(self):  # pragma: no cover
+        pass
+
+
 def cache_ignore(obj):
     """Ignore an object when deciding whether or not to cache.
 
@@ -41,15 +50,6 @@ def cache_ignore(obj):
 def cache_ignored(obj):
     """Determine whether or not an object should be ignored while caching."""
     return isinstance(obj, IgnoredData)
-
-
-class Data(object):
-    pass
-
-
-class IgnoredData(Data):
-    def __init__(self):  # pragma: no cover
-        pass
 
 
 class ObjectData(Data):
