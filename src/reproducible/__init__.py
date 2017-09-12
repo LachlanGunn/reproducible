@@ -22,4 +22,5 @@ from .wrapper import *
 
 hash_family = hashlib.sha256
 
-__all__ = ['operation', 'cache_ignore']
+__all__ = ['operation', 'cache_ignore',
+           'set_cache', 'MemoryCache', 'FileCache']
