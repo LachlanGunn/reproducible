@@ -189,7 +189,7 @@ def test_keras_model(out_type, in_type):
     if in_type == 'string':
         data_rt = reproducible.data.keras.ModelData.loads(serialised_data)
     elif in_type == 'file':
-        sio = io.BytesIO(serialised_data)
+        sio = io.StringIO(serialised_data.decode('utf8'))
         data_rt = reproducible.data.keras.ModelData.load(sio)
     else:
         raise ValueError("Invalid type parameter.")
