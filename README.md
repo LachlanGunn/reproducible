@@ -3,6 +3,8 @@ Reproducible scientific computing tools for Python
 
 ![Public Domain](doc/images/cc0-badge-88x15.png)
 [![Build Status](https://travis-ci.org/LachlanGunn/reproducible.svg?branch=master)](https://travis-ci.org/LachlanGunn/reproducible)
+[![Coverage Status](https://coveralls.io/repos/github/LachlanGunn/reproducible/badge.svg)](https://coveralls.io/github/LachlanGunn/reproducible)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/29dfd6e38473454cb2e29b388bb8b28c)](https://www.codacy.com/app/LachlanGunn/reproducible?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LachlanGunn/reproducible&amp;utm_campaign=Badge_Grade)
 
 ___This software is highly experimental.  Expect it to break at every
     opportunity.___
