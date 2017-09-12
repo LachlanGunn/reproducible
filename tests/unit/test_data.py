@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function, \
+    unicode_literals
 
 import io
+import itertools
 import os
 import numpy
 import pytest
@@ -19,10 +21,18 @@ class PlaceholderClass:
         return self.value == other.value
 
 
-DATA_OBJECT_EXAMPLES = [
-    (reproducible.ObjectData, PlaceholderClass('x')),
-    (reproducible.FileData, tempfile.mkstemp()[1]),
-]
+IO_TYPES = ['string', 'file']
+
+DATA_OBJECT_EXAMPLE_OBJECTS = {
+    reproducible.ObjectData: PlaceholderClass('x'),
+    reproducible.FileData: tempfile.mkstemp()[1],
+}
+
+DATA_OBJECT_EXAMPLES = \
+    [(reproducible.ObjectData, out_type, in_type)
+        for out_type, in_type in itertools.product(IO_TYPES, IO_TYPES)] + \
+    [(reproducible.FileData,   out_type, in_type)
+        for out_type, in_type in itertools.product(IO_TYPES, IO_TYPES)]
 
 
 def test_ignored_data():
@@ -118,38 +128,28 @@ def test_object_auto_object():
     data.cache_id(None)
 
 
-@pytest.mark.parametrize('datatype,test_object', DATA_OBJECT_EXAMPLES)
-def test_data_roundtrip_string_out_string_in(datatype, test_object):
+@pytest.mark.parametrize('datatype,out_type,in_type', DATA_OBJECT_EXAMPLES)
+def test_data_roundtrips(out_type, in_type, datatype):
+    test_object = DATA_OBJECT_EXAMPLE_OBJECTS[datatype]
     object_data_x1 = datatype(test_object)
-    object_data_x2 = datatype.loads(object_data_x1.dumps())
-    assert object_data_x1.value == object_data_x2.value
 
+    if out_type == 'string':
+        serialised_data = object_data_x1.dumps()
+    elif out_type == 'file':
+        sio = io.BytesIO()
+        object_data_x1.dump(sio)
+        serialised_data = sio.getvalue()
+    else:
+        raise ValueError("Invalid type parameter.")
 
-@pytest.mark.parametrize('datatype,test_object', DATA_OBJECT_EXAMPLES)
-def test_data_roundtrip_string_out_file_in(datatype, test_object):
-    object_data_x1 = datatype(test_object)
-    serialised_object = object_data_x1.dumps()
-    serialised_object_file = io.BytesIO(serialised_object)
-    object_data_x2 = datatype.load(serialised_object_file)
-    assert object_data_x1.value == object_data_x2.value
+    if in_type == 'string':
+        object_data_x2 = datatype.loads(serialised_data)
+    elif in_type == 'file':
+        sio = io.BytesIO(serialised_data)
+        object_data_x2 = datatype.load(sio)
+    else:
+        raise ValueError("Invalid type parameter.")
 
-
-@pytest.mark.parametrize('datatype,test_object', DATA_OBJECT_EXAMPLES)
-def test_data_roundtrip_file_out_string_in(datatype, test_object):
-    object_data_x1 = datatype(test_object)
-    serialised_object_file = io.BytesIO()
-    object_data_x1.dump(serialised_object_file)
-    object_data_x2 = datatype.loads(serialised_object_file.getvalue())
-    assert object_data_x1.value == object_data_x2.value
-
-
-@pytest.mark.parametrize('datatype,test_object', DATA_OBJECT_EXAMPLES)
-def test_data_roundtrip_file_out_file_in(datatype, test_object):
-    object_data_x1 = datatype(test_object)
-    serialised_object_file = io.BytesIO()
-    object_data_x1.dump(serialised_object_file)
-    serialised_object_file.seek(0)
-    object_data_x2 = datatype.load(serialised_object_file)
     assert object_data_x1.value == object_data_x2.value
 
 
@@ -164,18 +164,40 @@ def test_object_auto_model():
 
 
 @pytest.mark.slow
-def test_keras_model():
+@pytest.mark.parametrize('out_type,in_type', [
+    ('string', 'string'),
+    ('string', 'file'),
+    ('file', 'string'),
+    ('file', 'file'),
+])
+def test_keras_model(out_type, in_type):
     import keras.models, keras.layers
     import reproducible.data.keras
     x = keras.models.Sequential([keras.layers.Dense(32, input_shape=(2, ))])
     data = reproducible.get_data_wrapper(x)
     assert isinstance(data, reproducible.data.keras.ModelData)
-    data_rt = reproducible.data.keras.ModelData.loads(data.dumps())
 
-    assert data.model.get_config() == data_rt.model.get_config()
+    if out_type == 'string':
+        serialised_data = data.dumps()
+    elif out_type == 'file':
+        sio = io.BytesIO()
+        data.dump(sio)
+        serialised_data = sio.getvalue()
+    else:
+        raise ValueError("Invalid type parameter.")
 
-    weights_initial = data.model.get_weights()
-    weights_roundtrip = data_rt.model.get_weights()
+    if in_type == 'string':
+        data_rt = reproducible.data.keras.ModelData.loads(serialised_data)
+    elif in_type == 'file':
+        sio = io.BytesIO(serialised_data)
+        data_rt = reproducible.data.keras.ModelData.load(sio)
+    else:
+        raise ValueError("Invalid type parameter.")
+
+    assert data.value.get_config() == data_rt.value.get_config()
+
+    weights_initial = data.value.get_weights()
+    weights_roundtrip = data_rt.value.get_weights()
     assert len(weights_initial) == len(weights_roundtrip)
     for i in range(len(weights_initial)):
         assert (weights_initial[i] == weights_roundtrip[i]).all()

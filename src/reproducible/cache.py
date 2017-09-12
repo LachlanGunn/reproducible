@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function, \
+    unicode_literals
 
 import os.path
 import pickle
 
 import reproducible
 import reproducible.data
-import sys
 
 
 class Cache(object):
@@ -38,7 +38,7 @@ class FileCache(Cache):
         # type: (str) -> bool
         return os.path.isdir(root)
 
-    def __init__(self, root, debug=False):
+    def __init__(self, root, debug=None):
         # type: (str, bool) -> None
         super(FileCache, self).__init__()
         if not self.__check_directory__(root):
@@ -53,7 +53,7 @@ class FileCache(Cache):
     def get(self, key):
         # type: (str) -> object
         if self.debug:
-            print("GET %s\n -> " % (key, ), file=sys.stderr, end="")
+            print("GET %s\n -> " % (key, ), file=self.debug, end="")
         base_path = os.path.join(self.root, key)
         with open(os.path.join(base_path, 'data'), 'rb') as fh, \
              open(os.path.join(base_path, 'type'), 'rb') as fh_type:
@@ -62,14 +62,14 @@ class FileCache(Cache):
                 data = fh.read()
                 hash_context = reproducible.hash_family()
                 hash_context.update(data)
-                print(hash_context.hexdigest(), file=sys.stderr)
+                print(hash_context.hexdigest(), file=self.debug)
                 return data_type.loads(data)
             return data_type.load(fh)
 
     def set(self, key, value):
         # type: (str, reproducible.data.Data) -> None
         if self.debug:
-            print('SET %s' % key, file=sys.stderr)
+            print('SET %s' % key, file=self.debug)
         base_path = os.path.join(self.root, key)
         if not self.__check_directory__(base_path):
             os.mkdir(base_path)

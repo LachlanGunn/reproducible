@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function, \
+    unicode_literals
 
+import pytest
 import reproducible
 import shutil
 import tempfile
@@ -9,8 +11,14 @@ import tempfile
 side_effects = 0
 
 
-def test_wrapper():
+@pytest.fixture
+def memory_cache():
+    return reproducible.MemoryCache()
+
+
+def test_wrapper(memory_cache):
     global side_effects
+    reproducible.set_cache(memory_cache)
 
     side_effects = 0
 
@@ -36,8 +44,27 @@ def test_wrapper():
     assert side_effects == 4
 
 
-def test_wrapper_ignore_argument():
+def test_wrapper_use_data_directly(memory_cache):
     global side_effects
+    reproducible.set_cache(memory_cache)
+
+    side_effects = 0
+
+    @reproducible.operation
+    def bar(x):
+        global side_effects
+        side_effects += 1
+        return side_effects - 1
+
+    bar("x")
+    assert side_effects == 1
+    bar(reproducible.get_data_wrapper("x"))
+    assert side_effects == 1
+
+
+def test_wrapper_ignore_argument(memory_cache):
+    global side_effects
+    reproducible.set_cache(memory_cache)
 
     side_effects = 0
 
@@ -68,8 +95,9 @@ def test_wrapper_ignore_argument():
     bar(reproducible.cache_ignore(C(3)))
 
 
-def test_wrapper_file_cache():
+def test_wrapper_file_cache(memory_cache):
     global side_effects
+    reproducible.set_cache(memory_cache)
     root_dir = tempfile.mkdtemp()
     try:
         reproducible.set_cache(reproducible.FileCache(root_dir))

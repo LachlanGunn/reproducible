@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function, \
+    unicode_literals
 
 import base64
 import os.path
@@ -47,7 +48,7 @@ class Data(object):
 
 
 class IgnoredData(Data):
-    def __init__(self):
+    def __init__(self):  # pragma: no cover
         pass
 
 
@@ -102,7 +103,8 @@ class FileData(Data):
                 for chunk in iter(lambda: fh.read(1024), b''):
                     hash_context.update(chunk)
                 file_hash = hash_context.digest()
-                self.id_cached = base64.b16encode(file_hash).decode('ascii').lower()
+                self.id_cached = base64.b16encode(file_hash).decode(
+                    'ascii').lower()
                 self.id_cached_modification_time = modification_time
 
         return self.id_cached
