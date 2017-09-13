@@ -38,7 +38,7 @@
         <link rel="copyright" title="Copyright" href="copyright.html"/>
     <link rel="top" title="reproducible 0.0 documentation" href="index.html"/>
         <link rel="next" title="API Documentation" href="api.html"/>
-        <link rel="prev" title="Introduction" href="intro.html"/> 
+        <link rel="prev" title="Basic Usage" href="intro.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -93,7 +93,7 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Basic Usage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Caching</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="copyright.html">Copyright</a></li>
@@ -163,13 +163,30 @@
   <div class="section" id="caching">
 <h1>Caching<a class="headerlink" href="#caching" title="Permalink to this headline">¶</a></h1>
 <p>Much of the utility of <code class="xref py py-mod docutils literal"><span class="pre">reproducible</span></code> is lost if we do not
-persistently cache our results.  To this end, we provide the
-<code class="xref py py-class docutils literal"><span class="pre">FileCache</span></code> class, which is used as below:</p>
+cache our results.  The (global) cache can be set
+using <a class="reference internal" href="api.html#reproducible.set_cache" title="reproducible.set_cache"><code class="xref py py-func docutils literal"><span class="pre">set_cache</span></code></a>,
+which can accept instances of other cache types:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">reproducible</span><span class="o">.</span><span class="n">set_cache</span><span class="p">(</span><span class="n">SomeCacheClass</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>By default we use a memory-backed
+cache, implemented by <a class="reference internal" href="api.html#reproducible.MemoryCache" title="reproducible.MemoryCache"><code class="xref py py-class docutils literal"><span class="pre">MemoryCache</span></code></a>.
+However, for most purposes, we desire a cache that persists longer than
+the Python interpreter.  To this end, we provide the
+<a class="reference internal" href="api.html#reproducible.FileCache" title="reproducible.FileCache"><code class="xref py py-class docutils literal"><span class="pre">FileCache</span></code></a>
+class, which is used as below:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">reproducible</span><span class="o">.</span><span class="n">set_cache</span><span class="p">(</span><span class="n">reproducible</span><span class="o">.</span><span class="n">FileCache</span><span class="p">(</span><span class="s2">&quot;/path/to/cache/&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>This setting applies globally.  <code class="xref py py-class docutils literal"><span class="pre">FileCache</span></code> will automatically create
-the directory if it does not exist.</p>
+<p>This setting applies globally.  <a class="reference internal" href="api.html#reproducible.FileCache" title="reproducible.FileCache"><code class="xref py py-class docutils literal"><span class="pre">FileCache</span></code></a>
+will automatically create the directory if it does not exist.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><strong>Never use a cache whose contents you do not trust.</strong>
+Many objects are serialised using <a class="reference external" href="https://docs.python.org/3/library/pickle.html#module-pickle" title="(in Python v3.6)"><code class="xref py py-mod docutils literal"><span class="pre">pickle</span></code></a>,
+which allows the execution of arbitrary code when its output
+is read back.</p>
+</div>
 <p>The cache is not automatically purged, and changes to arguments and
 function source-code will result in a directory whose size will
 grow without bound.</p>
@@ -188,7 +205,7 @@ grow without bound.</p>
         <a href="api.html" class="btn btn-neutral float-right" title="API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="intro.html" class="btn btn-neutral" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="intro.html" class="btn btn-neutral" title="Basic Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

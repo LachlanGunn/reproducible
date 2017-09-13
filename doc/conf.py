@@ -34,6 +34,7 @@
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.coverage',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode']
@@ -161,7 +162,9 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-
-
 autodoc_mock_imports = ["keras"]
 autoclass_content = 'both'
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+}

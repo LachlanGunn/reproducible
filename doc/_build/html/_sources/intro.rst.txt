@@ -1,20 +1,12 @@
-============
-Introduction
-============
-
-The ``reproducible`` module for Python provides tools to aid in performing reproducible scientific computations.
-
-By supporting a more functional style of programming, we allow parameters to
-be described at the top level of a computation. This will allow us to make
-full use of the literate programming capabilities provided by PythonTeX without
-either a long wait every time we compile or external result caches that must
-be kept in sync.
+===========
+Basic Usage
+===========
 
 ------------
 Installation
 ------------
 
-``reproducible`` can be installed directly from Github using `pip`::
+:mod:`reproducible` can be installed directly from Github using `pip`::
 
     $ pip install https://github.com/LachlanGunn/reproducible
 
@@ -24,7 +16,7 @@ The module is compatible with Python ≥2.7 and ≥3.4.
 Synopsis
 --------
 
-We demonstrate the use of ``reproducible`` with a simple example::
+We demonstrate the use of :mod:`reproducible` with a simple example::
 
     >>> def slow_add(a, b):
     ...     time.sleep(3)
